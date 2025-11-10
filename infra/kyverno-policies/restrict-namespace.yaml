@@ -1,0 +1,19 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-namespace
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: restrict-ns
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: "Pods must only be created in allowed namespaces."
+        pattern:
+          metadata:
+            namespace: "trusted"
