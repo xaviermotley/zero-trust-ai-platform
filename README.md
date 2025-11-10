@@ -1,121 +1,97 @@
-# Zero‑Trust AI Platform — Attested Build‑to‑Prod + Confidential Inference + Detections‑as‑Code  
+# Zero Trust AI Platform — Attested Build‑to‑Prod + Confidential Inference + Detections‑as‑Code  
 
 **Elevator pitch:** I built an end‑to‑end security platform that cryptographically attests software from source to runtime, enforces zero‑trust workload identity, runs LLM inference only inside attested TEEs with conditional key release, and ships detections‑as‑code with a unified security data lake. It’s reproducible locally and in cloud, measured with SLOs and CI gates.  
 
-[![Supply Chain Security](https://img.shields.io/badge/Supply%20Chain-SLSA%20%2B%20cosign-blue)]()  
-[![Zero Trust Identity](https://img.shields.io/badge/Identity-SPIFFE%2FSPiRE-green)]()  
-[![Confidential AI](https://img.shields.io/badge/Confidential%20AI-TEE%20Attestation-orange)]()  
-[![Detections-as-Code](https://img.shields.io/badge/Detections--as--Code-purple)]()  
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)  
+[![Supply Chain Security](https://img.shields.io/badge/Supply%20Chain-SLSA%20%2B%20cosign-blue)]()  [![Zero Trust Identity](https://img.shields.io/badge/Identity-SPIFFE%2FSPiRE-green)]()  [![Confidential AI](https://img.shields.io/badge/Confidential%20AI-TEE%20Attestation-orange)]()  [![Detections‑as‑Code](https://img.shields.io/badge/Detections--as--Code-purple)]()  [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)  
 
 ## Overview  
+
 This project demonstrates how to build a production‑grade, zero‑trust AI platform by combining **software supply‑chain security**, **workload identity**, **confidential inference**, **unified telemetry**, and **AI safety evaluations**. The goal is to prove that you can cryptographically attest your code from build to deployment, enforce workload identity and authorization, decrypt model weights only inside trusted execution environments (TEEs), normalise all telemetry to OCSF, write detections as code, and measure everything with SLOs and CI gates.  
 
-## ⚡ Quickstart  
+## ⚡ Quickstart  
 
 ```bash
-# 1️⃣ Clone the repository
+# 1⃣ Clone the repository
 git clone https://github.com/xaviermotley/zero-trust-ai-platform.git
 cd zero-trust-ai-platform
 
-# 2️⃣ Review the infra and supply chain modules
+# 2⃣ Review the infra and supply chain modules
 # (e.g. Terraform/Helm for cluster, SPIRE, Kyverno, cosign)
 ls infra/ supply-chain/
 
-# 3️⃣ Explore the services and confidential inference
+# 3⃣ Explore the services and confidential inference
 ls services/ confidential/
 
-# 4️⃣ Run the sample detections and simulations
+# 4⃣ Run the sample detections and simulations
 ls detections/ simulations/
 
-# 5️⃣ Inspect AI safety harness
+# 5⃣ Inspect AI safety harness
 ls ai-safety/
-```
+```  
 
 ## 🏗 Architecture  
-The platform follows a secure pipeline: **Build → Sign → Attest → Admit → Confidentially Run → Detect → Respond**. The architecture diagram in `docs/architecture.md` illustrates this flow, showing how source code goes through CI to produce signed artifacts with SLSA provenance, which are then admitted into the cluster only if signatures and attestations are valid. Workloads obtain SPIFFE identities via SPIRE, request decryption keys from KMS/Key Vault only when running in an attested TEE, emit telemetry to a unified security data lake, and enforce AI safety and guardrails with continuous evaluations.  
 
-## 📂 Repository Structure  
+The platform follows a secure pipeline: **Build → Sign → Attest → Admit → Confidentially Run → Detect → Respond**. The architecture diagram in `docs/architecture.md` illustrates this flow, showing how source code goes through CI to produce signed artifacts with SLSA provenance, which are then admitted into the cluster only if signatures and attestations are valid. Workloads obtain SPIFFE identities via SPIRE, request decryption keys from KMS/Key Vault only when running in an attested TEE, emit telemetry to a unified security data lake, and enforce AI safety with continuous evaluations.  
 
-| Path | Purpose |
-|-----|---------|
-| `/infra/` | Terraform/Helm to deploy the cluster, SPIRE, policies, and TEE provider modules. |
-| `/supply-chain/` | Build configs for SBOM generation, SLSA provenance, cosign signing/verification, and Kyverno policies. |
-| `/services/model-gateway/` | A SPIFFE‑aware gateway service that calls the inference endpoint. |
-| `/services/inference/` | The inference service or stub running inside a TEE with sealed weights. |
-| `/services/policy-svc/` | Example authorization service using Cedar or OPA/Gatekeeper. |
-| `/confidential/` | Scripts and configs for confidential inference (e.g., Nitro Enclaves, Secure Key Release, Confidential Space). |
-| `/identity/` | SPIRE server/agent manifests and workload registration entries. |
-| `/detections/` | Sigma rules and converters for detections‑as‑code. |
-| `/simulations/` | Stratus Red Team and Atomic Red Team runners for validating detections. |
-| `/telemetry/` | OpenTelemetry collector configs and OCSF mappings for unified telemetry. |
-| `/ai-safety/` | Harnesses for AI safety evaluations using NeMo Guardrails, PyRIT, or garak. |
-| `/docs/` | Architecture diagrams, threat models, runbooks, SLO definitions, and governance mappings. |
-| `.github/workflows/` | CI workflows for build→sign pipelines, policy tests, evals, Scorecard, and CodeQL. |
+## 🗂 Repository Structure  
 
-## 📈 Key Metrics (SLOs)  
+| Folder | Purpose |
+|---|---|
+| `infra/` | Terraform/Helm modules for cluster, SPIRE, policies, and TEE path |
+| `supply-chain/` | SBOM and provenance generation, cosign signing/verification, Kyverno policies |
+| `services/model-gateway/` | SPIFFE‑aware gateway that invokes the inference service |
+| `services/inference/` | In‑TEE inference service or stub with sealed weights |
+| `services/policy-svc/` | Authorization example using Cedar or OPA |
+| `confidential/` | Scripts and policies for confidential computing (Nitro Enclaves, SKR, Confidential Space) |
+| `identity/` | SPIRE server/agent manifests and workload registrations |
+| `detections/` | Sigma rules for detections‑as‑code |
+| `simulations/` | Stratus Red Team and Atomic Red Team runners |
+| `telemetry/` | OpenTelemetry collector configs and OCSF mappings |
+| `ai-safety/` | PyRIT/garak harness and NeMo Guardrails configs |
+| `docs/` | Architecture diagrams, runbooks, SLOs, and governance mapping |
+| `.github/workflows/` | CI pipelines for build/sign/verify, tests, evals, Scorecard & CodeQL |
 
-- **Attested Deployments** – percentage of deployments admitted only after verifying cosign signatures and in‑toto attestations.  
-- **Attestation Latency** – mean time from build to attested deployment in production.  
-- **Guardrail Catch Rate** – success rate of AI safety harness catching unsafe responses (e.g., prompt injection, data exfiltration).  
-- **Policy Enforcement Rate** – ratio of admission requests rejected by Kyverno/OPA due to missing attestations or wrong identities.  
-- **Detection Coverage** – proportion of validated TTPs covered by Sigma rules (via Stratus and Atomic tests).  
+## 📈 Key Metrics (SLOs)  
 
-## 🛠 Implementation Steps  
+| Metric | Description |
+|---|---|
+| **Attested deploy rate** | Percentage of deployments with valid signatures & attestations |
+| **Mean time to attested deploy** | Average time from commit to attested deployment |
+| **Guardrail catch‑rate** | Percentage of AI safety tests caught by guardrails |
+| **Policy enforcement rate** | Percentage of admission requests rejected by verifyImages & authz policies |
+| **Detection coverage** | Fraction of tested TTPs detected by Sigma rules |
 
-1. **Supply‑Chain Hardening**  
-   - Configure the CI to generate SBOMs and SLSA provenance.  
-   - Sign container images with cosign using keyless mode.  
-   - Write Kyverno `verifyImages` policies that enforce cosign signature and in‑toto attestations before deployment.  
+## 🚀 Implementation Steps  
 
-2. **Identity‑First Runtime**  
-   - Deploy SPIRE to issue SPIFFE IDs to all workloads.  
-   - Enforce mTLS between services and implement authorization using Cedar policies or OPA/Gatekeeper.  
+- **Week 1: Supply chain MVP** – Generate SBOM and SLSA provenance; sign images with cosign; enforce verifyImages with Kyverno.  
+- **Week 2: Identity & authz** – Deploy SPIRE for workload identities; enforce mTLS; implement a simple Cedar/OPA authorization check.  
+- **Week 3: Telemetry & detections** – Configure OpenTelemetry and Security Lake/OCSF; write a couple of Sigma rules; validate one Stratus technique.  
+- **Week 4: Confidential inference** – Implement attestation‑gated key release using one cloud provider (Nitro Enclaves, SKR, or Confidential Space).  
+- **Week 5: AI safety & runtime** – Wire PyRIT or garak with NeMo Guardrails; add 1‑2 runtime security policies (eBPF/Falco); finalize SLO tracking and governance mapping.  
 
-3. **Confidential Inference**  
-   - Choose a cloud provider and set up a TEE (e.g., AWS Nitro Enclaves, Azure Secure Key Release, or GCP Confidential Space).  
-   - Store encrypted model weights/secrets and configure KMS/Key Vault to release them only after verifying attestation claims.  
-   - Demonstrate the attestation→key release flow in the `/confidential/` module.  
+## 🧩 Progressive Add‑Ons  
 
-4. **Telemetry & Detections‑as‑Code**  
-   - Instrument services with OpenTelemetry and route logs/metrics/traces to a security data lake (OCSF via Security Lake if on AWS).  
-   - Author Sigma rules to detect specific attack techniques and validate them using Stratus Red Team (cloud TTPs) and Atomic Red Team (host/container).  
+- **Compliance copilot** – Integrate with open‑source Vanta MCP server or similar to answer “what controls are failing & why?”.  
+- **Evidence lineage** – Attach original OCSF record or ARN to your evidence for chain‑of‑custody.  
+- **Org‑scale backfills** – Use Step Functions Distributed Map for multi‑account backfills or periodic control re‑evidence.  
 
-5. **AI Safety & Evaluations**  
-   - Integrate a test harness (NeMo Guardrails, PyRIT, or garak) against your inference endpoint.  
-   - Export evaluation results to JSON and fail the CI if the guardrail catch rate drops below your SLO.  
-   - Map the evaluated controls to NIST AI RMF and MITRE ATLAS in a governance table within `/docs/`.  
+## 📝 Notes & Gotchas  
 
-6. **Runtime Protection (Bonus)**  
-   - Deploy runtime security tools such as Cilium Tetragon or Falco.  
-   - Create policies to detect and alert on suspicious behavior (e.g., execution from `/tmp` or namespace escapes).  
+- If hardware TEEs aren’t available, you can demonstrate the attestation‑gated decryption pattern locally using Confidential Containers (CoCo) Key Broker Service. Document how to swap in Nitro Enclaves, Azure SKR, or GCP Confidential Space when running in cloud.  
+- Workload identity is critical; ensure all services use SPIRE‑issued SPIFFE IDs and enforce mTLS.  
+- Policy sprawl can be complex: decide between Cedar and OPA based on expressiveness and ecosystem.  
+- Respect key release rate limits and monitor attestation verifications for latency.  
 
-## 🚀 Progressive Add‑Ons  
+## 📚 References  
 
-- **Compliance Copilot** – Integrate an AI assistant (e.g., via Vanta MCP or custom chatbot) to answer questions like “what controls are failing and why?” from your telemetry and governance data.  
-- **Evidence Lineage** – Include the original SBOM, provenance, and OCSF record IDs in your evidence artifacts to maintain chain‑of‑custody.  
-- **Org‑Scale Backfills** – Use Step Functions distributed maps or equivalent to backfill attestations and evidence across multiple accounts and regions.  
+- SLSA specification, cosign quickstart, and Kyverno verifyImages  
+- SPIFFE/SPIRE workload identity  
+- AWS Nitro Enclaves & KMS, Azure Secure Key Release, GCP Confidential Space  
+- OCSF & Security Lake, OpenTelemetry  
+- Sigma rules, Stratus Red Team, Atomic Red Team  
+- NeMo Guardrails, PyRIT, garak; NIST AI RMF & MITRE ATLAS  
+- OpenSSF Scorecard, GitHub CodeQL  
 
-## ⚠ Notes & Gotchas  
+## 📄 License  
 
-- **TEEs Availability** – If you don’t have access to Nitro Enclaves or other cloud TEEs, you can implement the pattern locally with a Confidential Containers (CoCo) Key Broker Service. Document how to swap this for Nitro, SKR, or Confidential Space when available.  
-- **Authentication & Rate Limits** – Manage secrets (keys, OAuth tokens) securely via AWS Secrets Manager or equivalent. Respect API rate limits when integrating with external services.  
-- **Policy Choices** – Decide between Kyverno vs. OPA/Gatekeeper, and Cedar vs. Rego, based on ecosystem compatibility and complexity.  
-- **Security of the Repo** – Enable OpenSSF Scorecard and GitHub CodeQL workflows to keep your repository secure.  
-
-## 📚 References  
-
-- [SLSA Specification & cosign Quickstart](https://slsa.dev)  
-- [SPIFFE/SPIRE Workload Identity](https://spiffe.io)  
-- [AWS Nitro Enclaves & KMS Attestation](https://aws.amazon.com/ec2/nitro/)  
-- [Azure Secure Key Release](https://learn.microsoft.com/azure/key-vault/general/key-release)  
-- [GCP Confidential Space](https://cloud.google.com/confidential-computing)  
-- [Open Cybersecurity Schema Framework (OCSF)](https://schema.ocsf.io)  
-- [Sigma Rules & Stratus/Atomic Red Team](https://github.com/SigmaHQ/sigma)  
-- [NeMo Guardrails, PyRIT, garak](https://github.com/NVIDIA/NeMo-Guardrails)  
-- [NIST AI Risk Management Framework & MITRE ATLAS](https://www.nist.gov/itl/ai-risk-management-framework)  
-- [OpenSSF Scorecard & GitHub CodeQL](https://securityscorecards.dev)  
-
-## 📄 License  
-
-MIT License © 2025 Xavier Motley
+MIT License © 2025 Xavier Motley
