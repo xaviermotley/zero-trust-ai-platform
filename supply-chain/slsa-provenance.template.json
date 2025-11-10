@@ -1,0 +1,31 @@
+{
+  "_type": "https://slsa.dev/provenance/v1",
+  "predicateType": "https://slsa.dev/provenance/v1",
+  "subject": [
+    {
+      "name": "{{IMAGE_NAME}}",
+      "digest": {
+        "sha256": "{{IMAGE_DIGEST}}"
+      }
+    }
+  ],
+  "predicate": {
+    "buildType": "https://slsa.dev/container/v1",
+    "builder": {
+      "id": "github.com/{{REPOSITORY}}/actions/runs/{{RUN_ID}}"
+    },
+    "invocation": {
+      "configSource": {
+        "uri": "git+https://github.com/{{REPOSITORY}}.git",
+        "digest": {
+          "sha1": "{{COMMIT_SHA}}"
+        },
+        "entryPoint": "{{WORKFLOW}}"
+      },
+      "parameters": {},
+      "environment": {}
+    },
+    "buildConfig": {},
+    "materials": []
+  }
+}
