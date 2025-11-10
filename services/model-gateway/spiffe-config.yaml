@@ -1,0 +1,10 @@
+workload_api:
+  socket_path: /tmp/agent.sock
+
+trust_domain: example.org
+
+bundles:
+  endpoints:
+    - endpoint: https://spire-server.example.org:443
+      profile: https_web
+      ca_bundle: /etc/ssl/certs/ca-certificates.crt
