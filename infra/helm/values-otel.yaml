@@ -1,0 +1,19 @@
+# Values for OpenTelemetry Collector Helm chart
+deploymentMode: deployment
+config:
+  exporters:
+    logging:
+      loglevel: debug
+  receivers:
+    otlp:
+      protocols:
+        grpc: {}
+        http: {}
+  service:
+    pipelines:
+      traces:
+        receivers: [otlp]
+        exporters: [logging]
+      metrics:
+        receivers: [otlp]
+        exporters: [logging]
