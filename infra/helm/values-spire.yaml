@@ -1,0 +1,10 @@
+server:
+  image:
+    repository: ghcr.io/spiffe/spire-server
+    tag: 1.6.0
+agent:
+  image:
+    repository: ghcr.io/spiffe/spire-agent
+    tag: 1.6.0
+trustDomain: example.org
+clusterName: demo
