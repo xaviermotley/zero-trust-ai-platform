@@ -1,0 +1,9 @@
+# Default Kyverno Helm values for deploying the policy engine
+replicaCount: 1
+image:
+  repository: ghcr.io/kyverno/kyverno
+  tag: v1.10.0
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
